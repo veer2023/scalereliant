@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scale Reliant – SRE & Platform Engineering for Growing Teams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a0e27;
+            --secondary: #1a1f3a;
+            --accent: #00d9ff;
+            --accent-warm: #ff6b35;
+            --text-primary: #f0f1f5;
+            --text-secondary: #a8adc0;
+            --border: #2a2f48;
+            --success: #10b981;
+            --bg-card: rgba(26, 31, 58, 0.6);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a, nav button {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav button:hover {
+            color: var(--accent);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            color: var(--primary);
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 60px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 3rem 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .hero .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .hero-content {
+            max-width: 700px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 .accent {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.25);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--accent);
+            padding: 1rem 2rem;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Services Section */
+        .services {
+            padding: 6rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .services .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent);
+            background: rgba(26, 31, 58, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.1);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Blog Section */
+        .blog {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.5) 0%, rgba(10, 14, 39, 0.5) 100%);
+        }
+
+        .blog .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .blog-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.1);
+        }
+
+        .blog-card-meta {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .blog-date {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .blog-card h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            margin: 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .blog-category {
+            display: inline-block;
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .blog-card-body {
+            padding: 1.5rem;
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .read-more:hover {
+            color: var(--accent-warm);
+        }
+
+        /* Blog Post Page */
+        .blog-post {
+            padding: 6rem 2rem;
+        }
+
+        .blog-post .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .post-header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-header h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .post-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .post-content {
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .post-content h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .post-content h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+            color: var(--text-primary);
+        }
+
+        .post-content p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .post-content ul, .post-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-content code {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .post-content pre {
+            background: rgba(10, 14, 39, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content pre code {
+            background: none;
+            color: var(--accent);
+            padding: 0;
+        }
+
+        .post-content blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .post-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .post-cta {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .post-cta h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--accent-warm);
+        }
+
+        /* Case Studies */
+        .case-studies {
+            padding: 6rem 2rem;
+        }
+
+        .case-study-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .case-study-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.1);
+        }
+
+        .case-study-header {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .case-study-header h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .case-study-subtitle {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .case-study-body {
+            padding: 2rem;
+        }
+
+        .case-study-body p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .challenge, .solution, .result {
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge h4, .solution h4, .result h4 {
+            color: var(--accent);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Contact Form */
+        .contact-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.5) 0%, rgba(10, 14, 39, 0.5) 100%);
+        }
+
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .contact-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(10, 14, 39, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.25);
+        }
+
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+        }
+
+        .cta-content h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .form-row, .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid, .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .primary-btn, .secondary-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="#" class="logo" onclick="showPage('home'); return false;">Scale Reliant</a>
+            <ul>
+                <li><button onclick="showPage('home'); return false;">Home</button></li>
+                <li><button onclick="showPage('blog'); return false;">Blog</button></li>
+                <li><button onclick="showPage('case-studies'); return false;">Case Studies</button></li>
+                <li><button onclick="showPage('contact'); return false;">Contact</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="page active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Infrastructure that <span class="accent">Scales with You</span></h1>
+                    <p>Expert SRE and platform engineering guidance for growing startups and mid-market companies. We help you build reliable, scalable systems without the enterprise overhead.</p>
+                    <div class="hero-buttons">
+                        <button class="primary-btn" onclick="showPage('contact'); return false;">Start Free Consultation</button>
+                        <button class="secondary-btn" onclick="showPage('blog'); return false;">Read Our Insights</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services">
+            <div class="container">
+                <div class="section-header">
+                    <h2>What We Offer</h2>
+                    <p>Practical SRE and platform engineering solutions built for growth stage companies</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🚀</div>
+                        <h3>Infrastructure as Code</h3>
+                        <p>Move from manual ops to automated, version-controlled infrastructure using Terraform and Ansible. Reduce deployment friction and human error.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">📈</div>
+                        <h3>SRE Fundamentals</h3>
+                        <p>Implement SLOs, error budgets, and incident response playbooks. Build a reliability culture without needing a massive ops team.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">☁️</div>
+                        <h3>Cloud Operations</h3>
+                        <p>Optimize AWS costs, architect multi-region deployments, and implement disaster recovery. Keep your cloud bill predictable.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🔍</div>
+                        <h3>Observability</h3>
+                        <p>Set up monitoring, logging, and alerting that actually helps. Know what's happening in production before customers do.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🐳</div>
+                        <h3>Kubernetes & Containerization</h3>
+                        <p>Containerize your apps and manage them with Kubernetes. Simplify deployments and scale dynamically with demand.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👨‍💼</div>
+                        <h3>Team Mentorship</h3>
+                        <p>Build SRE and DevOps capabilities within your team. Transfer knowledge so you're not dependent on external consultants.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Ready to Improve Your Infrastructure?</h2>
+                <p>Let's talk about your current challenges and how Scale Reliant can help you build systems that scale with your team.</p>
+                <button class="primary-btn" onclick="showPage('contact'); return false;">Schedule a Chat</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- BLOG PAGE -->
+    <div id="blog" class="page">
+        <section class="blog" style="margin-top: 80px;">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Infrastructure Insights</h2>
+                    <p>Practical guides and strategies for building reliable, scalable systems at your stage</p>
+                </div>
+                <div class="blog-grid" id="blogGrid">
+                    <!-- Blog cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- BLOG POST PAGE -->
+    <div id="blog-post" class="page">
+        <section class="blog-post">
+            <div class="container">
+                <a href="#" class="back-button" onclick="showPage('blog'); return false;">← Back to Blog</a>
+                <div class="post-header" id="postHeader">
+                    <!-- Post header will be inserted here -->
+                </div>
+                <div class="post-content" id="postContent">
+                    <!-- Post content will be inserted here -->
+                </div>
+                <div class="post-footer">
+                    <div class="post-cta">
+                        <h3>Ready to Transform Your Infrastructure?</h3>
+                        <p>I help startups and mid-market companies build reliable, scalable systems. Let's discuss your challenges and explore what's possible.</p>
+                        <button class="primary-btn" onclick="showPage('contact'); return false;" style="width: auto;">Schedule Free Assessment</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CASE STUDIES PAGE -->
+    <div id="case-studies" class="page">
+        <section class="case-studies" style="margin-top: 80px;">
+            <div class="container" style="max-width: 900px;">
+                <div class="section-header">
+                    <h2>Results We've Delivered</h2>
+                    <p>Real outcomes from infrastructure and SRE engagements</p>
+                </div>
+
+                <div class="case-study-card">
+                    <div class="case-study-header">
+                        <div class="case-study-subtitle">CASE STUDY #1</div>
+                        <h3>From Manual Ops to Automated Infrastructure</h3>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="challenge">
+                            <h4>Challenge</h4>
+                            <p>Fortune 500 company with 100+ mission-critical applications running on VMware and AWS. Manual provisioning, inconsistent deployments, and frequent human errors during releases.</p>
+                        </div>
+                        <div class="solution">
+                            <h4>Solution</h4>
+                            <p>Implemented Infrastructure as Code using Terraform, automated CI/CD pipelines with Jenkins, and containerized applications with Kubernetes. Established SRE practices including SLO-driven reliability and blameless postmortems.</p>
+                        </div>
+                        <div class="result">
+                            <h4>Result</h4>
+                            <p>30% reduction in operational toil, 40% faster deployments, and improved system reliability across the board.</p>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <div class="metric-value">30%</div>
+                                <div class="metric-label">Less Manual Work</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">40%</div>
+                                <div class="metric-label">Faster Deployments</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">99.99%</div>
+                                <div class="metric-label">Uptime Achieved</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-study-card">
+                    <div class="case-study-header">
+                        <div class="case-study-subtitle">CASE STUDY #2</div>
+                        <h3>Cloud Migration & Cost Optimization</h3>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="challenge">
+                            <h4>Challenge</h4>
+                            <p>Mid-market SaaS company running on-premises with growing cloud footprint. Unoptimized AWS costs spiraling ($500K+ monthly), no cost governance, and lack of disaster recovery planning.</p>
+                        </div>
+                        <div class="solution">
+                            <h4>Solution</h4>
+                            <p>Conducted cloud audit, rightsized instances, implemented reserved instances and savings plans. Built cost monitoring dashboards with tagging governance. Architected multi-region active-active setup for disaster recovery.</p>
+                        </div>
+                        <div class="result">
+                            <h4>Result</h4>
+                            <p>$150K monthly savings, predictable cloud costs, and RTO/RPO targets of 30-60 minutes across regions.</p>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <div class="metric-value">30%</div>
+                                <div class="metric-label">Cost Reduction</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">100+</div>
+                                <div class="metric-label">Apps Migrated</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">1hr</div>
+                                <div class="metric-label">Recovery Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-study-card">
+                    <div class="case-study-header">
+                        <div class="case-study-subtitle">CASE STUDY #3</div>
+                        <h3>Observability & Incident Response</h3>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="challenge">
+                            <h4>Challenge</h4>
+                            <p>Growing startup with reactive incident response, no observability strategy, and long MTTR (4+ hours). Engineers spending more time firefighting than building.</p>
+                        </div>
+                        <div class="solution">
+                            <h4>Solution</h4>
+                            <p>Implemented Dynatrace for application monitoring, PagerDuty for incident routing, and automation runbooks. Created SRE playbooks and alert thresholds tied to SLOs. Built on-call rotation and postmortem culture.</p>
+                        </div>
+                        <div class="result">
+                            <h4>Result</h4>
+                            <p>MTTR reduced from 4 hours to 30 minutes. Proactive alerts prevented 60% of incidents from impacting users.</p>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <div class="metric-value">35%</div>
+                                <div class="metric-label">MTTR Reduction</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">60%</div>
+                                <div class="metric-label">Incidents Prevented</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">99.95%</div>
+                                <div class="metric-label">Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="contact" class="page">
+        <section class="contact-section" style="margin-top: 80px;">
+            <div class="contact-container">
+                <div class="contact-header">
+                    <h2>Let's Talk Infrastructure</h2>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">Tell me about your challenges. I'll share practical insights and next steps.</p>
+                </div>
+
+                <form class="contact-form" id="contactForm">
+                    <div class="success-message" id="successMessage">
+                        ✓ Thanks for reaching out! I'll be in touch within 24 hours.
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="company">Company</label>
+                            <input type="text" id="company" name="company" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">Your Role</label>
+                            <input type="text" id="role" name="role" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge">What's Your Biggest Infrastructure Challenge?</label>
+                        <select id="challenge" name="challenge" required>
+                            <option value="">Select a challenge...</option>
+                            <option value="cloud-migration">Cloud Migration</option>
+                            <option value="cost-optimization">Cloud Cost Optimization</option>
+                            <option value="reliability">Improving Reliability & Uptime</option>
+                            <option value="automation">Reducing Manual Operations</option>
+                            <option value="observability">Setting Up Observability</option>
+                            <option value="kubernetes">Kubernetes & Containerization</option>
+                            <option value="security">Security & Compliance</option>
+                            <option value="team-building">Building SRE/DevOps Team</option>
+                            <option value="other">Something Else</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Tell Me More</label>
+                        <textarea id="message" name="message" placeholder="Any additional context about your infrastructure, team size, current tech stack, or timeline..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Scale Reliant. All rights reserved. | Built for startup and mid-market growth.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Blog posts data - Edit this array to add your blog posts
+        const blogPosts = [
+            {
+                id: 'aws-waste',
+                title: 'Why Most Startups Waste $500K+ on AWS (And How to Fix It)',
+                category: 'Cloud Costs',
+                excerpt: 'Most startups are hemorrhaging money on AWS without realizing it. Learn the 3 biggest cost optimization mistakes and how to fix them in weeks.',
+                date: 'March 15, 2025',
+                readTime: '8 min read',
+                author: 'Scale Reliant',
+                content: `
+                    <h2>The AWS Cost Problem</h2>
+                    <p>Most startups spend 3-5x more on AWS than they need to. I've audited dozens of infrastructure setups, and the pattern is always the same: teams optimize for flexibility and speed during early growth, then forget to optimize for cost once they're scaling.</p>
+                    <p>The good news? You can recover 30-40% of your cloud spend with a systematic approach.</p>
+
+                    <h2>The 3 Biggest Cost Optimization Mistakes</h2>
+                    
+                    <h3>1. Running On-Demand When You Could Use Reservations</h3>
+                    <p>This is the low-hanging fruit. Most startups run all their servers on-demand, paying full price for every instance, every hour.</p>
+                    <p><strong>The Fix:</strong> Switch to a combination of Reserved Instances (1-3 year commitments) and Savings Plans (compute flexibility). Typical savings: 40-60% on compute.</p>
+                    <p><strong>How to implement:</strong></p>
+                    <ul>
+                        <li>Identify your baseline workload (what you always run)</li>
+                        <li>Reserve 70% of that with 1-year RIs (70% discount)</li>
+                        <li>Use Savings Plans for the flexible 30%</li>
+                        <li>Keep on-demand for spikes and temporary workloads</li>
+                    </ul>
+
+                    <h3>2. Overly Large Instance Types</h3>
+                    <p>Teams pick big instances because "we might need the headroom" or "it's easier than managing auto-scaling." Result: 60% of your instance capacity sits unused.</p>
+                    <p><strong>The Fix:</strong> Right-size your instances. Use CloudWatch metrics to see actual usage, then pick instances that fit your actual demand.</p>
+                    <p><strong>Typical savings:</strong> 20-30% just from rightsizing.</p>
+
+                    <h3>3. Leaving Data Transfer Costs Unchecked</h3>
+                    <p>Data transfer between regions, to the internet, and between services adds up fast. Most teams don't even monitor it.</p>
+                    <p><strong>The Fix:</strong> Implement a cost monitoring dashboard. Tag all resources. Set alerts for unusual costs.</p>
+                    <p><strong>Typical savings:</strong> 10-15% from improved architectural decisions.</p>
+
+                    <h2>The Systematic Approach: A 4-Week Audit</h2>
+                    <p><strong>Week 1:</strong> Data collection and analysis</p>
+                    <ul>
+                        <li>Export 3 months of AWS billing</li>
+                        <li>Identify top cost drivers (usually compute, storage, data transfer)</li>
+                        <li>Map costs to services/teams</li>
+                    </ul>
+                    <p><strong>Week 2-3:</strong> Implementation planning</p>
+                    <ul>
+                        <li>Calculate reservation strategy</li>
+                        <li>Identify rightsizing opportunities</li>
+                        <li>Plan architectural changes</li>
+                    </ul>
+                    <p><strong>Week 4:</strong> Execution and monitoring setup</p>
+                    <ul>
+                        <li>Purchase Reserved Instances</li>
+                        <li>Implement auto-scaling</li>
+                        <li>Set up cost monitoring and alerts</li>
+                    </ul>
+
+                    <h2>Real Numbers</h2>
+                    <p>I worked with a Series B startup spending $500K/month on AWS:</p>
+                    <ul>
+                        <li>Right-sizing instances: -$80K/month</li>
+                        <li>Moving to Reserved Instances: -$120K/month</li>
+                        <li>Optimizing data transfer: -$30K/month</li>
+                        <li>Killing unused resources: -$20K/month</li>
+                    </ul>
+                    <p><strong>Total monthly savings: $250K (50%)</strong></p>
+
+                    <h2>The Bottom Line</h2>
+                    <p>AWS cost optimization isn't a one-time project—it's an ongoing discipline. But the first pass is where you find the biggest wins. Most startups can save 30-40% in the first 90 days with systematic approach.</p>
+                    <p>Start with Reserved Instances and right-sizing. Those two alone will fix most of your problem.</p>
+                `
+            },
+            {
+                id: 'sre-startups',
+                title: 'SRE for Startups: Do You Really Need It?',
+                category: 'SRE',
+                excerpt: 'You don\'t need a 10-person SRE team at Series A. But you do need SRE thinking. Here\'s what actually matters at each stage.',
+                date: 'March 1, 2025',
+                readTime: '10 min read',
+                author: 'Scale Reliant',
+                content: `
+                    <h2>The SRE Misconception</h2>
+                    <p>SRE isn't a headcount. It's a practice. And you need it earlier than you think—just not in the way Google does it.</p>
+                    <p>Most startups think "SRE means hiring senior engineers to focus purely on reliability." That's too expensive. What you actually need is <strong>SRE thinking embedded in your engineering culture</strong>.</p>
+
+                    <h2>SRE Practices by Stage</h2>
+                    
+                    <h3>Seed/Series A (10-30 Engineers)</h3>
+                    <p><strong>What you need:</strong> SRE mindset, minimal tooling</p>
+                    <p><strong>Practices:</strong></p>
+                    <ul>
+                        <li>Define SLOs (even simple ones: 99.5% uptime is fine)</li>
+                        <li>Automate deployments (no manual SSH)</li>
+                        <li>Basic monitoring (Datadog's free tier or Prometheus)</li>
+                        <li>Incident runbooks (even 1-page documents help)</li>
+                        <li>Blameless postmortems (learn from incidents)</li>
+                    </ul>
+                    <p><strong>Who does it:</strong> One engineer + culture (not a dedicated role)</p>
+                    <p><strong>Cost:</strong> Free (mostly tooling, which you'd buy anyway)</p>
+
+                    <h3>Series B (30-100 Engineers)</h3>
+                    <p><strong>What you need:</strong> Dedicated SRE knowledge, mature practices</p>
+                    <p><strong>Practices:</strong></p>
+                    <ul>
+                        <li>Error budgets (formalize reliability targets)</li>
+                        <li>Observability (metrics, logs, traces)</li>
+                        <li>Incident response playbooks</li>
+                        <li>On-call rotation + tooling (PagerDuty)</li>
+                        <li>Automation of operational tasks</li>
+                    </ul>
+                    <p><strong>Who does it:</strong> 1-2 dedicated SREs + engineering culture</p>
+                    <p><strong>Cost:</strong> $150-200K/year salary + tools</p>
+
+                    <h3>Series C+ (100+ Engineers)</h3>
+                    <p><strong>What you need:</strong> Full SRE organization, platform engineering</p>
+                    <p><strong>Practices:</strong></p>
+                    <ul>
+                        <li>SLOs at service level</li>
+                        <li>Sophisticated observability</li>
+                        <li>Self-service infrastructure (platform team)</li>
+                        <li>Disaster recovery + chaos engineering</li>
+                        <li>Multi-region/cloud strategy</li>
+                    </ul>
+                    <p><strong>Who does it:</strong> 3-10 SREs + platform team</p>
+
+                    <h2>The SRE Starter Kit</h2>
+                    <p>Don't need to hire. You need to adopt these practices:</p>
+                    
+                    <h3>1. Define SLOs (Service Level Objectives)</h3>
+                    <p>Not some perfect number—just realistic targets for your service.</p>
+                    <p><strong>Example:</strong> "Our API is 99.5% available, and responds in < 200ms for 95% of requests."</p>
+                    <p>That's it. Simple, measurable, achievable.</p>
+
+                    <h3>2. Automate Everything</h3>
+                    <p>Manual deployments kill reliability. Automate:
+                    <ul>
+                        <li>Deployments (CI/CD pipeline)</li>
+                        <li>Rollbacks</li>
+                        <li>Health checks</li>
+                        <li>Scaling decisions</li>
+                    </ul>
+
+                    <h3>3. Monitor What Matters</h3>
+                    <p>Not every metric. Just the ones your SLOs care about:</p>
+                    <ul>
+                        <li>Availability (is it up?)</li>
+                        <li>Latency (how fast?)</li>
+                        <li>Error rate (how many failures?)</li>
+                    </ul>
+
+                    <h3>4. Incident Response Process</h3>
+                    <p>When things break (and they will):</p>
+                    <ul>
+                        <li>Declare severity (P1/P2/P3)</li>
+                        <li>Assign incident commander</li>
+                        <li>Communicate status</li>
+                        <li>Post-mortem (within 24 hours)</li>
+                    </ul>
+
+                    <h2>The Real Cost of Not Doing SRE</h2>
+                    <p>Every unplanned incident costs you:</p>
+                    <ul>
+                        <li>Engineering time (5-20 hours per incident)</li>
+                        <li>Lost revenue (depends on your product)</li>
+                        <li>Customer trust</li>
+                        <li>Operational toil (engineer burnout)</li>
+                    </ul>
+                    <p>One major incident costs 5-10x more than setting up basic SRE practices.</p>
+
+                    <h2>Bottom Line</h2>
+                    <p>Start SRE now. You don't need to hire. You need to think about reliability as a feature, not an afterthought.</p>
+                `
+            },
+            {
+                id: 'kubernetes-startups',
+                title: 'Kubernetes for Startups: When It Makes Sense',
+                category: 'Infrastructure',
+                excerpt: 'Kubernetes is powerful but complex. Here\'s exactly when to adopt it (spoiler: probably not at Series A).',
+                date: 'February 18, 2025',
+                readTime: '7 min read',
+                author: 'Scale Reliant',
+                content: `
+                    <h2>The Kubernetes Hype</h2>
+                    <p>Everyone talks about Kubernetes. Most startups don't need it yet. Some teams never will.</p>
+                    <p>Let me give you the decision framework.</p>
+
+                    <h2>Do You Actually Need Kubernetes?</h2>
+                    <p><strong>You probably DON'T need K8s if:</strong></p>
+                    <ul>
+                        <li>You have < 50 engineers</li>
+                        <li>Your monolith/application is happy and scaling fine</li>
+                        <li>You're not managing hundreds of services</li>
+                        <li>Your deployment times are acceptable</li>
+                        <li>You don't have serious scale challenges yet</li>
+                    </ul>
+
+                    <p><strong>You probably DO need K8s if:</strong></p>
+                    <ul>
+                        <li>You're managing 10+ microservices</li>
+                        <li>You need horizontal scaling (tons of instances)</li>
+                        <li>You're deploying multiple times per day across services</li>
+                        <li>You have complex resource requirements</li>
+                        <li>You need multi-cloud/multi-region portability</li>
+                    </ul>
+
+                    <h2>The Real Timeline</h2>
+                    
+                    <h3>Series A: Don't Do It</h3>
+                    <p><strong>Focus:</strong> Getting traction, not infrastructure complexity</p>
+                    <p><strong>Use:</strong> Managed platforms (Heroku, Railway, Render, or simple Docker on ECS)</p>
+                    <p><strong>Why:</strong> K8s overhead isn't worth it when you're 10-30 people</p>
+
+                    <h3>Series B: Maybe Consider It</h3>
+                    <p><strong>When:</strong> You're managing 5+ services, deploying frequently, and scaling is a real problem</p>
+                    <p><strong>How:</strong> Managed K8s (EKS, GKE, AKS) - NOT self-managed</p>
+                    <p><strong>Cost:</strong> ~$500/month managed cluster + DevOps person learning</p>
+
+                    <h3>Series C+: Probably Yes</h3>
+                    <p><strong>Why:</strong> You have the engineering team to operate it, and the complexity is worth solving</p>
+                    <p><strong>How:</strong> Mix of managed K8s + platform engineering team building abstractions</p>
+
+                    <h2>The Hidden Costs of Kubernetes</h2>
+                    <ul>
+                        <li><strong>Learning curve:</strong> 2-3 months to competency</li>
+                        <li><strong>Complexity:</strong> YAML, networking, storage, security policies</li>
+                        <li><strong>Operational overhead:</strong> Upgrades, patching, troubleshooting</li>
+                        <li><strong>Human cost:</strong> You need someone who understands it (expensive)</li>
+                    </ul>
+
+                    <h2>Better Alternatives at Different Stages</h2>
+                    
+                    <h3>Pre-Series A</h3>
+                    <p><strong>Use:</strong> Heroku, Railway, or Render</p>
+                    <p><strong>Why:</strong> Fastest to market, minimal ops</p>
+
+                    <h3>Series A-B</h3>
+                    <p><strong>Use:</strong> ECS (Elastic Container Service) or Fly.io</p>
+                    <p><strong>Why:</strong> Container orchestration without K8s complexity</p>
+                    <p><strong>Cost:</strong> 50% cheaper than K8s, 80% simpler</p>
+
+                    <h3>Series B-C</h3>
+                    <p><strong>Use:</strong> Managed Kubernetes (EKS, GKE)</p>
+                    <p><strong>Why:</strong> Complexity worth it, but let AWS/GCP run it</p>
+                    <p><strong>Never self-manage K8s</strong> unless you have a dedicated DevOps/platform team</p>
+
+                    <h2>How to Make the Decision</h2>
+                    <p>Ask these 4 questions:</p>
+                    <ol>
+                        <li>Do you have 5+ microservices or plan to soon? (If no, skip K8s)</li>
+                        <li>Do you need to deploy multiple times per day? (If no, simpler solution works)</li>
+                        <li>Do you have someone who wants to own K8s? (Critical—don't force it)</li>
+                        <li>Can you afford $500+/month in additional infrastructure? (Yes? Then maybe)</li>
+                    </ol>
+                    <p>If all 4 are yes, start with managed K8s. Otherwise, use ECS or simpler alternatives.</p>
+
+                    <h2>Bottom Line</h2>
+                    <p>Kubernetes is incredible. It's also overkill for most startups at most stages. Don't adopt it because everyone talks about it. Adopt it when the complexity actually solves your problems better than simpler solutions.</p>
+                `
+            }
+        ];
+
+        // Page Navigation
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageName).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Display blog posts
+        function loadBlogPosts() {
+            const blogGrid = document.getElementById('blogGrid');
+            blogGrid.innerHTML = blogPosts.map(post => `
+                <div class="blog-card" onclick="showBlogPost('${post.id}');">
+                    <div class="blog-card-meta">
+                        <div class="blog-date">${post.date}</div>
+                        <h3>${post.title}</h3>
+                        <span class="blog-category">${post.category}</span>
+                    </div>
+                    <div class="blog-card-body">
+                        <p class="blog-excerpt">${post.excerpt}</p>
+                        <a href="#" class="read-more" onclick="event.stopPropagation();">Read Article →</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display single blog post
+        function showBlogPost(postId) {
+            const post = blogPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            const postHeader = document.getElementById('postHeader');
+            postHeader.innerHTML = `
+                <div class="blog-date">${post.date} • ${post.readTime}</div>
+                <h1>${post.title}</h1>
+                <p>${post.category}</p>
+            `;
+
+            const postContent = document.getElementById('postContent');
+            postContent.innerHTML = post.content;
+
+            showPage('blog-post');
+        }
+
+        // Contact Form Handler
+        const contactForm = document.getElementById('contactForm');
+        const successMessage = document.getElementById('successMessage');
+
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                company: document.getElementById('company').value,
+                role: document.getElementById('role').value,
+                challenge: document.getElementById('challenge').value,
+                message: document.getElementById('message').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const form = new FormData();
+            form.append('name', formData.name);
+            form.append('email', formData.email);
+            form.append('company', formData.company);
+            form.append('role', formData.role);
+            form.append('challenge', formData.challenge);
+            form.append('message', formData.message);
+
+            // Replace with your email
+            fetch('https://formsubmit.co/your-email@example.com', {
+                method: 'POST',
+                body: form
+            })
+            .then(response => {
+                if (response.ok) {
+                    successMessage.classList.add('show');
+                    contactForm.reset();
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 5000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an issue. Please try again.');
+            });
+        });
+
+        // Initialize blog posts on page load
+        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+    </script>
+</body>
+</html>
