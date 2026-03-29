@@ -1493,7 +1493,10 @@
             // Replace with your email
             fetch('https://formsubmit.co/varinderm@gmail.com', {
                 method: 'POST',
-                body: form
+                headers: {
+                    'Accept': 'application/json'  // ← THIS WAS MISSING
+                },
+                body: formData
             })
             .then(response => {
                 if (response.ok) {
